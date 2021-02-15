@@ -1,12 +1,14 @@
 """
-Bruteforce attack for .rar using unrar.
+Bruteforce attack for .rar using 7z
 
-V: 0.0.2.4
+V: 0.0.2.5
 
 Based on:
 http://stackoverflow.com/questions/11747254/python-brute-force-algorithm
 http://www.enigmagroup.org/code/view/python/168-Rar-password-cracker
 http://rarcrack.sourceforge.net/
+
+https://www.7-zip.org/
 """
 from argparse import ArgumentParser
 from itertools import chain, product
@@ -21,7 +23,7 @@ chars = (
 )
 special_chars = "();<>`|~\"&\'}]"
 
-parser = ArgumentParser(description='Python combination generator to unrar')
+parser = ArgumentParser(description='Python combination generator to decompress')
 parser.add_argument(
     '--start',
     help='Number of characters of the initial string [1 -> "a", 2 -> "aa"]',
@@ -45,7 +47,7 @@ parser.add_argument(
     required=False,
 )
 
-parser.add_argument('--file', help='.rar file [file.rar]', type=str)
+parser.add_argument('--file', help='Compressed file [fileName]', type=str)
 
 args = parser.parse_args()
 
@@ -85,13 +87,13 @@ if __name__ == '__main__':
             print(f'Trying: {combination}')
 
         cmd = Popen(
-            f'unrar t -p{formated_combination} {args.file}'.split(),
+            f'7z t -p{formated_combination} {args.file}'.split(),
             stdout=PIPE,
             stderr=PIPE,
         )
         out, err = cmd.communicate()
 
-        if 'All OK' in out.decode():
+        if 'Everything is Ok' in out.decode():
             print(f'Password found: {combination}')
             print(f'Time: {time() - start_time}')
             exit()
